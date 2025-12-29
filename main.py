@@ -56,8 +56,14 @@ app.include_router(reports.router, prefix="/api/reports", tags=["Reports"])
 app.include_router(assignments.router, prefix="/api/assignments", tags=["Assignments"])
 app.include_router(driver_locations.router, prefix="/api/driver-locations", tags=["Driver Locations"])
 
-# Also include auth router without /api prefix for frontend compatibility
+# Also include routers without /api prefix for frontend compatibility
 app.include_router(auth.router, prefix="/auth", tags=["Authentication (No API Prefix)"])
+app.include_router(users.router, prefix="/users", tags=["Users (No API Prefix)"])
+app.include_router(vehicle_types.router, prefix="/vehicle-types", tags=["Vehicle Types (No API Prefix)"])
+app.include_router(vehicles.router, prefix="/vehicles", tags=["Vehicles (No API Prefix)"])
+app.include_router(reports.router, prefix="/reports", tags=["Reports (No API Prefix)"])
+app.include_router(assignments.router, prefix="/assignments", tags=["Assignments (No API Prefix)"])
+app.include_router(driver_locations.router, prefix="/driver-locations", tags=["Driver Locations (No API Prefix)"])
 
 
 @app.get("/")

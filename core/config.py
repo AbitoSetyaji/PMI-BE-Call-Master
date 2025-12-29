@@ -3,9 +3,10 @@ from typing import Optional
 
 
 class Settings(BaseSettings):
-    """
-    Application settings loaded from environment variables
-    """
+    DATABASE_URL: str = "mysql+aiomysql://user:password@localhost:3306/pmi_db"
+    JWT_SECRET_KEY: str = "your-secret-key"
+    JWT_ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     # Database
     DATABASE_URL: str
     
