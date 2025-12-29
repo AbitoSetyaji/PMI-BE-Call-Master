@@ -1,0 +1,19 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Force shell scripts to use LF line endings (required for Linux containers)
+*.sh text eol=lf
+
+# Force common config files to use LF
+*.ini text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Dockerfile should use LF
+Dockerfile text eol=lf
+
+# Python files
+*.py text eol=lf
+
+# Keep Windows batch files with CRLF
+*.bat text eol=crlf
