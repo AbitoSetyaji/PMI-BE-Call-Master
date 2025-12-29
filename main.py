@@ -43,7 +43,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include routers
+# Include routers with /api prefix
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(users.router, prefix="/api/users", tags=["Users"])
 app.include_router(vehicle_types.router, prefix="/api/vehicle-types", tags=["Vehicle Types"])
@@ -51,6 +51,9 @@ app.include_router(vehicles.router, prefix="/api/vehicles", tags=["Vehicles"])
 app.include_router(reports.router, prefix="/api/reports", tags=["Reports"])
 app.include_router(assignments.router, prefix="/api/assignments", tags=["Assignments"])
 app.include_router(driver_locations.router, prefix="/api/driver-locations", tags=["Driver Locations"])
+
+# Also include auth router without /api prefix for frontend compatibility
+app.include_router(auth.router, prefix="/auth", tags=["Authentication (No API Prefix)"])
 
 
 @app.get("/")
