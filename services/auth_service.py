@@ -20,15 +20,27 @@ async def authenticate_user(db: AsyncSession, email: str, password: str) -> Opti
     Returns:
         User object if authenticated, None otherwise
     """
+    print(f"🔍 DEBUG: Attempting login for email: {email}")
+    
     result = await db.execute(select(User).where(User.email == email))
     user = result.scalar_one_or_none()
     
     if not user:
+        print(f"❌ DEBUG: User with email '{email}' NOT FOUND in database")
         return None
     
-    if not verify_password(password, user.password):
+    print(f"✅ DEBUG: User found - ID: {user.id}, Name: {user.name}, Role: {user.role}")
+    print(f"🔐 DEBUG: Stored password hash (first 20 chars): {user.password[:20] if user.password else 'EMPTY'}...")
+    print(f"🔐 DEBUG: Password hash length: {len(user.password) if user.password else 0}")
+    
+    is_valid = verify_password(password, user.password)
+    print(f"🔐 DEBUG: Password verification result: {is_valid}")
+    
+    if not is_valid:
+        print(f"❌ DEBUG: Password verification FAILED for user {email}")
         return None
     
+    print(f"✅ DEBUG: Authentication SUCCESSFUL for user {email}")
     return user
 
 
