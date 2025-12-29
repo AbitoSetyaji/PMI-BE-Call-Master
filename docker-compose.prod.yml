@@ -45,7 +45,8 @@ services:
         condition: service_healthy
     command: >
       sh -c "
-        ./wait-for-mysql.sh mysql &&
+        echo '⏳ Waiting for MySQL to be fully ready...' &&
+        sleep 5 &&
         echo '🔄 Running database migrations...' &&
         alembic upgrade head &&
         echo '🔄 Initializing transport system...' &&
