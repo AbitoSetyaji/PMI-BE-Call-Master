@@ -32,6 +32,27 @@ async def create_driver_location(
     return await driver_location_service.create_driver_location(db, location_data, current_user)
 
 
+# IMPORTANT: This route MUST be defined BEFORE /{driver_id} routes
+# Otherwise, FastAPI will match "/all/active" as driver_id="all"
+@router.get("/all/active", status_code=status.HTTP_200_OK)
+async def get_all_active_driver_locations(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Get latest location for all active drivers (admin only)
+    Used for dashboard map view
+    
+    Args:
+        db: Database session
+        current_user: Current authenticated user
+        
+    Returns:
+        List of driver locations with driver info
+    """
+    return await driver_location_service.get_all_active_driver_locations(db, current_user)
+
+
 @router.get("/{driver_id}", status_code=status.HTTP_200_OK)
 async def get_driver_latest_location(
     driver_id: str,
@@ -81,22 +102,3 @@ async def get_driver_location_history(
         Paginated list of driver locations
     """
     return await driver_location_service.get_driver_location_history(db, driver_id, current_user, page, size)
-
-
-@router.get("/all/active", status_code=status.HTTP_200_OK)
-async def get_all_active_driver_locations(
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    """
-    Get latest location for all active drivers (admin only)
-    Used for dashboard map view
-    
-    Args:
-        db: Database session
-        current_user: Current authenticated user
-        
-    Returns:
-        List of driver locations with driver info
-    """
-    return await driver_location_service.get_all_active_driver_locations(db, current_user)
