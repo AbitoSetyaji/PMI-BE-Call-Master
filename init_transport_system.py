@@ -216,40 +216,46 @@ async def create_users():
 
 async def main():
     """Main initialization function"""
+    from db.session import close_db
+    
     print("=" * 75)
     print(" " * 15 + "PMI Transport System - Database Initialization")
     print("=" * 75)
     
-    # Step 1: Create vehicle types
-    print("\n[STEP 1/3] Setting up vehicle types...")
-    result = await create_vehicle_types()
-    
-    # Step 2: Create sample vehicles
-    if result:
-        patient_id, mortuary_id = result
-        print("\n[STEP 2/3] Setting up sample vehicles...")
-        await create_sample_vehicles(patient_id, mortuary_id)
-    else:
-        print("\n[!] Skipping vehicle creation - vehicle types not created")
-    
-    # Step 3: Create users
-    print("\n[STEP 3/3] Setting up user accounts...")
-    await create_users()
-    
-    # Summary
-    print("\n" + "=" * 75)
-    print(" " * 25 + "[SUCCESS] Setup Complete!")
-    print("=" * 75)
-    print("\n[NEXT STEPS]")
-    print("  1. Start server    : fastapi dev main.py")
-    print("  2. API Docs        : http://localhost:8000/docs")
-    print("  3. Login as Admin  : admin@pmi.id / admin123")
-    print("  4. Login as Driver : driver1@pmi.id / driver123")
-    print("\n[IMPORTANT]")
-    print("  - Change default passwords after first login!")
-    print("  - Vehicle Types: patient_transport, mortuary_transport")
-    print("  - Sample vehicles created for testing")
-    print("=" * 75)
+    try:
+        # Step 1: Create vehicle types
+        print("\n[STEP 1/3] Setting up vehicle types...")
+        result = await create_vehicle_types()
+        
+        # Step 2: Create sample vehicles
+        if result:
+            patient_id, mortuary_id = result
+            print("\n[STEP 2/3] Setting up sample vehicles...")
+            await create_sample_vehicles(patient_id, mortuary_id)
+        else:
+            print("\n[!] Skipping vehicle creation - vehicle types not created")
+        
+        # Step 3: Create users
+        print("\n[STEP 3/3] Setting up user accounts...")
+        await create_users()
+        
+        # Summary
+        print("\n" + "=" * 75)
+        print(" " * 25 + "[SUCCESS] Setup Complete!")
+        print("=" * 75)
+        print("\n[NEXT STEPS]")
+        print("  1. Start server    : fastapi dev main.py")
+        print("  2. API Docs        : http://localhost:8000/docs")
+        print("  3. Login as Admin  : admin@pmi.id / admin123")
+        print("  4. Login as Driver : driver1@pmi.id / driver123")
+        print("\n[IMPORTANT]")
+        print("  - Change default passwords after first login!")
+        print("  - Vehicle Types: patient_transport, mortuary_transport")
+        print("  - Sample vehicles created for testing")
+        print("=" * 75)
+    finally:
+        # Properly close database connections to avoid "Event loop is closed" warning
+        await close_db()
 
 
 if __name__ == "__main__":
