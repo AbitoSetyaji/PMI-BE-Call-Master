@@ -204,7 +204,8 @@ async def get_all_active_driver_locations(
     current_user: User
 ) -> dict:
     """
-    Get latest location for all active drivers (admin only)
+    Get latest location for all drivers (admin/reporter only)
+    Shows all drivers including those who haven't shared location yet
     
     Args:
         db: Database session
@@ -214,7 +215,7 @@ async def get_all_active_driver_locations(
         List of driver locations with driver info, assignment and report details
         
     Raises:
-        HTTPException: If not admin
+        HTTPException: If not admin/reporter
     """
     if current_user.role not in ["admin", "reporter"]:
         raise HTTPException(
@@ -233,6 +234,10 @@ async def get_all_active_driver_locations(
     
     driver_locations = []
     
+    # Default location (Jakarta - PMI HQ) for drivers without location
+    DEFAULT_LATITUDE = -6.2088
+    DEFAULT_LONGITUDE = 106.8456
+    
     for driver in drivers:
         # Get latest location for each driver
         result = await db.execute(
@@ -244,8 +249,10 @@ async def get_all_active_driver_locations(
         location = result.scalar_one_or_none()
         
         if location:
+            # Driver has location data
             location_dict = DriverLocationResponse.model_validate(location).model_dump()
             location_dict["driver_name"] = driver.name
+            location_dict["has_location"] = True
             
             # If there's an assignment, get full assignment and report details
             if location.assignment_id:
@@ -291,6 +298,21 @@ async def get_all_active_driver_locations(
                                 "status": report.status
                             }
             
+            driver_locations.append(location_dict)
+        else:
+            # Driver has NO location data yet - create placeholder entry
+            from datetime import datetime
+            location_dict = {
+                "id": f"no-location-{driver.id}",
+                "driver_id": driver.id,
+                "driver_name": driver.name,
+                "latitude": DEFAULT_LATITUDE,
+                "longitude": DEFAULT_LONGITUDE,
+                "timestamp": datetime.now().isoformat(),
+                "assignment_id": None,
+                "has_location": False,  # Flag to indicate no real location
+                "status": "no_location"
+            }
             driver_locations.append(location_dict)
     
     return success_response(
