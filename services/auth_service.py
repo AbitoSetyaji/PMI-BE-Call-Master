@@ -150,3 +150,37 @@ async def register(db: AsyncSession, user_data: UserCreate) -> dict:
             }
         }
     )
+
+
+async def refresh_token(current_user: User) -> dict:
+    """
+    Refresh access token for authenticated user
+    
+    Args:
+        current_user: Currently authenticated user
+        
+    Returns:
+        Dict with new access_token and user info
+    """
+    # Create new access token with same user data
+    access_token = create_access_token(
+        data={
+            "sub": current_user.email,
+            "user_id": current_user.id,
+            "role": current_user.role
+        }
+    )
+    
+    return success_response(
+        message="Token berhasil diperbarui",
+        data={
+            "access_token": access_token,
+            "token_type": "bearer",
+            "user": {
+                "id": current_user.id,
+                "name": current_user.name,
+                "email": current_user.email,
+                "role": current_user.role
+            }
+        }
+    )
