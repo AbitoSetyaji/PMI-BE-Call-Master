@@ -16,17 +16,7 @@ services:
     networks:
       - pmi-network
     healthcheck:
-      test:
-        [
-          "CMD",
-          "mysqladmin",
-          "ping",
-          "-h",
-          "localhost",
-          "-u",
-          "root",
-          "-prootpassword",
-        ]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -46,10 +36,6 @@ services:
       JWT_ALGORITHM: HS256
       ACCESS_TOKEN_EXPIRE_MINUTES: 30
       DEBUG: "False"
-      MYSQL_USER: pmi_user
-      MYSQL_PASSWORD: pmi_password
-    volumes:
-      - .:/app
     networks:
       - pmi-network
     depends_on:
@@ -57,18 +43,14 @@ services:
         condition: service_healthy
     command: >
       sh -c "
-        ./wait-for-mysql.sh mysql
         echo '🔄 Running database migrations...' &&
         alembic upgrade head &&
-        echo '🔄 Initializing transport system...' &&
-        python init_transport_system.py &&
         echo '🚀 Starting FastAPI application...' &&
-        uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+        uvicorn main:app --host 0.0.0.0 --port 8000
       "
 
 volumes:
   mysql_data:
-    driver: local
 
 networks:
   pmi-network:
