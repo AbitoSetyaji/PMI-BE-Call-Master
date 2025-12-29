@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     libffi-dev \
     libssl-dev \
+    dos2unix \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements file
@@ -31,8 +32,8 @@ RUN pip install --upgrade pip && \
 # Copy application code
 COPY . .
 
-# Make wait-for-mysql.sh executable
-RUN chmod +x wait-for-mysql.sh
+# Convert line endings and make wait-for-mysql.sh executable
+RUN dos2unix wait-for-mysql.sh && chmod +x wait-for-mysql.sh
 
 # Expose port
 EXPOSE 8000
