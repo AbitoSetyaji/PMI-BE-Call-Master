@@ -1,0 +1,75 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: pmi-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: pmi_emergency
+      MYSQL_USER: pmi_user
+      MYSQL_PASSWORD: pmi_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init-db:/docker-entrypoint-initdb.d
+    networks:
+      - pmi-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-prootpassword",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pmi-app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: mysql+aiomysql://pmi_user:pmi_password@mysql:3306/pmi_emergency
+      JWT_SECRET_KEY: your-secret-key-change-this-in-production
+      JWT_ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      DEBUG: "False"
+      MYSQL_USER: pmi_user
+      MYSQL_PASSWORD: pmi_password
+    volumes:
+      - .:/app
+    networks:
+      - pmi-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+    command: >
+      sh -c "
+        ./wait-for-mysql.sh mysql
+        echo '🔄 Running database migrations...' &&
+        alembic upgrade head &&
+        echo '🔄 Initializing transport system...' &&
+        python init_transport_system.py &&
+        echo '🚀 Starting FastAPI application...' &&
+        uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+      "
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  pmi-network:
+    driver: bridge
