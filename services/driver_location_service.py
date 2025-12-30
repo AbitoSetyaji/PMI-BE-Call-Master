@@ -234,9 +234,9 @@ async def get_all_active_driver_locations(
     
     driver_locations = []
     
-    # Default location (Jakarta - PMI HQ) for drivers without location
-    DEFAULT_LATITUDE = -6.2088
-    DEFAULT_LONGITUDE = 106.8456
+    # Default location (Semarang - PMI Jateng) for drivers without location
+    DEFAULT_LATITUDE = -6.9666
+    DEFAULT_LONGITUDE = 110.4196
     
     for driver in drivers:
         # Get latest location for each driver
