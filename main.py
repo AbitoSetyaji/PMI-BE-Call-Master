@@ -42,6 +42,9 @@ app.add_middleware(
         "https://pmikotasmg.site",
         "https://www.pmikotasmg.site",
         "https://api.pmikotasmg.site",
+        # Hostinger hostname
+        "http://srv1232368.hstgr.cloud",
+        "https://srv1232368.hstgr.cloud",
         # Direct IP access (production server)
         "http://148.230.100.61",
         "http://148.230.100.61:3000",
