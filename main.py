@@ -42,9 +42,13 @@ app.add_middleware(
         "https://pmikotasmg.site",
         "https://www.pmikotasmg.site",
         "https://api.pmikotasmg.site",
-        # Development domains
+        # Direct IP access (production server)
+        "http://148.230.100.61",
         "http://148.230.100.61:3000",
+        "http://148.230.100.61:3001",
+        # Development
         "http://localhost:3000",
+        "http://localhost:3001",
     ],
     allow_credentials=True,
     allow_methods=["*"],
