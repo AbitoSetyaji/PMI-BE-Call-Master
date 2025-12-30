@@ -15,7 +15,7 @@ services:
       - mysql_data:/var/lib/mysql
       - ./init-db:/docker-entrypoint-initdb.d
     networks:
-      - pmi-shared-network
+      - pmi-network
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpassword123}" ]
       interval: 10s
@@ -38,13 +38,10 @@ services:
       JWT_ALGORITHM: HS256
       ACCESS_TOKEN_EXPIRE_MINUTES: 1440
       DEBUG: "False"
-      # For wait-for-mysql.sh script
       MYSQL_USER: pmi_user
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-pmi_password123}
-    ports:
-      - "8000:8000"
     networks:
-      - pmi-shared-network
+      - pmi-network
     depends_on:
       mysql:
         condition: service_healthy
@@ -60,27 +57,43 @@ services:
       "
 
   # ============================================
-  # NGINX - Reverse Proxy with SSL
+  # NGINX - Reverse Proxy with SSL (Let's Encrypt)
   # ============================================
   nginx:
     image: nginx:alpine
-    container_name: pmi-be-nginx
+    container_name: pmi-nginx
     restart: unless-stopped
     ports:
-      - "100:80"
-      - "501:443"
+      - "80:80"
+      - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - certbot_data:/etc/letsencrypt:ro
+      - certbot_www:/var/www/certbot:ro
     networks:
-      - pmi-shared-network
+      - pmi-network
     depends_on:
       - backend
+
+  # ============================================
+  # CERTBOT - Let's Encrypt SSL Certificate
+  # ============================================
+  certbot:
+    image: certbot/certbot
+    container_name: pmi-certbot
+    volumes:
+      - certbot_data:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
 volumes:
   mysql_data:
     driver: local
+  certbot_data:
+    driver: local
+  certbot_www:
+    driver: local
 
 networks:
-  pmi-shared-network:
-    external: true
+  pmi-network:
+    driver: bridge
