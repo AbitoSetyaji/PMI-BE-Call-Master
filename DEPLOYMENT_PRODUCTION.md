@@ -59,6 +59,8 @@ chmod +x deploy-production.sh
 | URL | Fungsi |
 |-----|--------|
 | https://pmikotasmg.site | Website Utama |
+| https://api.pmikotasmg.site | Backend API (Direct) |
+| https://pmikotasmg.site/api | Backend API (via Path) |
 | https://pmikotasmg.site/api/docs | API Documentation |
 
 ---
