@@ -38,6 +38,11 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        # Production domains
+        "https://pmikotasmg.site",
+        "https://www.pmikotasmg.site",
+        "https://api.pmikotasmg.site",
+        # Development domains
         "http://148.230.100.61:3000",
         "http://localhost:3000",
     ],
