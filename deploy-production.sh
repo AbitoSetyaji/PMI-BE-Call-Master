@@ -28,7 +28,7 @@ events {
 http {
     server {
         listen 80;
-        server_name pmikotasmg.site www.pmikotasmg.site;
+        server_name pmikotasmg.site www.pmikotasmg.site api.pmikotasmg.site;
         
         location /.well-known/acme-challenge/ {
             root /var/www/certbot;
@@ -69,7 +69,8 @@ docker run --rm \
     --agree-tos \
     --no-eff-email \
     -d $DOMAIN \
-    -d www.$DOMAIN
+    -d www.$DOMAIN \
+    -d api.$DOMAIN
 
 # Step 6: Stop init nginx and start full nginx
 echo "🔧 Step 5: Restarting with full nginx config..."
