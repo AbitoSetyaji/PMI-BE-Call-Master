@@ -19,6 +19,7 @@ class AssignmentUpdate(BaseModel):
     """Schema for updating an assignment"""
     vehicle_id: Optional[str] = Field(None, description="Vehicle ID (UUID)")
     driver_id: Optional[str] = Field(None, description="Driver ID (UUID)")
+    coffin_checklist_confirmed: Optional[bool] = Field(None, description="Coffin/Keranda checklist confirmed")
 
 
 class AssignmentResponse(AssignmentBase):
@@ -27,6 +28,7 @@ class AssignmentResponse(AssignmentBase):
     status: str = "active"  # active, assigned, on_progress, completed, cancelled
     assigned_at: datetime
     completed_at: Optional[datetime] = None  # When assignment is completed
+    coffin_checklist_confirmed: bool = False  # Coffin/Keranda checklist confirmed
     updated_at: datetime
     
     class Config:

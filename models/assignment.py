@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, ForeignKey, String
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String
 from sqlalchemy.dialects.mysql import CHAR
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
@@ -19,6 +19,10 @@ class Assignment(Base):
     
     assigned_at = Column(DateTime, server_default=func.now(), nullable=False)
     completed_at = Column(DateTime, nullable=True)  # When assignment is completed
+    
+    # Coffin/Keranda checklist confirmation - for mortuary transport
+    coffin_checklist_confirmed = Column(Boolean, default=False, nullable=False)
+    
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=False)
     
     # Relationships
