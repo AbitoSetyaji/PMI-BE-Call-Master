@@ -56,12 +56,22 @@ chmod +x deploy-production.sh
 
 ## 🌐 Hasil Akhir
 
+### Akses via Domain (HTTPS)
 | URL | Fungsi |
 |-----|--------|
 | https://pmikotasmg.site | Website Utama |
 | https://api.pmikotasmg.site | Backend API (Direct) |
 | https://pmikotasmg.site/api | Backend API (via Path) |
 | https://pmikotasmg.site/api/docs | API Documentation |
+
+### Akses via IP (HTTP) - Development/Testing
+| URL | Fungsi |
+|-----|--------|
+| http://148.230.100.61 | Website Utama |
+| http://148.230.100.61/api | Backend API |
+| http://148.230.100.61/api/docs | API Documentation |
+
+> ⚠️ **Catatan:** Akses via IP menggunakan HTTP (tanpa SSL). Untuk production, gunakan akses via domain dengan HTTPS.
 
 ---
 
