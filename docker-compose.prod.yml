@@ -13,7 +13,7 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-pmi_password123}
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./init-db:/docker-entrypoint-initdb.d
+      - ./docker/init-db:/docker-entrypoint-initdb.d
     networks:
       - pmi-network
     healthcheck:
@@ -47,11 +47,11 @@ services:
         condition: service_healthy
     command: >
       sh -c "
-        ./wait-for-mysql.sh mysql
+        ./docker/wait-for-mysql.sh mysql
         echo '🔄 Running database migrations...' &&
         alembic upgrade head &&
         echo '🔄 Initializing transport system...' &&
-        python init_transport_system.py &&
+        python scripts/init_transport_system.py &&
         echo '🚀 Starting FastAPI application...' &&
         uvicorn main:app --host 0.0.0.0 --port 8000
       "
@@ -67,7 +67,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - certbot_data:/etc/letsencrypt:ro
       - certbot_www:/var/www/certbot:ro
     networks:

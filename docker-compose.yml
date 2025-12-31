@@ -12,11 +12,11 @@ services:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./init-db:/docker-entrypoint-initdb.d
+      - ./docker/init-db:/docker-entrypoint-initdb.d
     networks:
       - pmi-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -51,6 +51,7 @@ services:
 
 volumes:
   mysql_data:
+
 
 networks:
   pmi-network:
