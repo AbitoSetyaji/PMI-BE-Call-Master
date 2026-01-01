@@ -1,5 +1,6 @@
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials, OAuth2PasswordBearer
+from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -8,6 +9,7 @@ from core.security import decode_access_token
 from models.user import User
 
 security = HTTPBearer()
+optional_security = HTTPBearer(auto_error=False)
 
 
 async def get_current_user(
@@ -54,5 +56,39 @@ async def get_current_user(
             detail="User tidak ditemukan",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    
+    return user
+
+
+async def get_optional_current_user(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(optional_security),
+    db: AsyncSession = Depends(get_db)
+) -> Optional[User]:
+    """
+    Get current user if authenticated, otherwise return None.
+    Used for endpoints that are public but may have additional features for logged-in users.
+    
+    Args:
+        credentials: HTTP Bearer credentials (optional)
+        db: Database session
+        
+    Returns:
+        Current user object or None
+    """
+    if credentials is None:
+        return None
+    
+    token = credentials.credentials
+    payload = decode_access_token(token)
+    
+    if payload is None:
+        return None
+    
+    user_id: str = payload.get("user_id")
+    if user_id is None:
+        return None
+    
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
     
     return user

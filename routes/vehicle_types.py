@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List
+from typing import List, Optional
 from db.session import get_db
-from core.dependencies import get_current_user
+from core.dependencies import get_current_user, get_optional_current_user
 from models.user import User
 from schemas.vehicle_type import VehicleTypeCreate, VehicleTypeUpdate, VehicleTypeResponse
 from services import vehicle_type_service
@@ -15,16 +15,16 @@ async def get_all_vehicle_types(
     page: int = 1,
     size: int = 10,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: Optional[User] = Depends(get_optional_current_user)
 ):
     """
-    Get all vehicle types
+    Get all vehicle types (public endpoint)
     
     Args:
         page: Page number (default: 1)
         size: Items per page (default: 10)
         db: Database session
-        current_user: Current authenticated user
+        current_user: Current authenticated user (optional)
         
     Returns:
         Paginated list of vehicle types
