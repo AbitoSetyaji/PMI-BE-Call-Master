@@ -285,12 +285,26 @@ async def get_all_active_driver_locations(
                             location_dict["assignment_id"] = None
                             # Don't include completed assignment details
                         else:
+                            # Get transport type name from VehicleType
+                            from models.vehicle_type import VehicleType
+                            transport_type_name = None
+                            if report.transport_type:
+                                vt_result = await db.execute(
+                                    select(VehicleType).where(VehicleType.id == report.transport_type)
+                                )
+                                vt = vt_result.scalar_one_or_none()
+                                if vt:
+                                    transport_type_name = vt.name
+                            
                             # Only add report details for active assignments
                             location_dict["report"] = {
                                 "id": report.id,
                                 "requester_name": report.requester_name,
                                 "requester_phone": report.requester_phone,
-                                "transport_type": report.transport_type,
+                                "transport_type": transport_type_name,
+                                "transport_type_name": transport_type_name,
+                                "schedule_date": str(report.schedule_date) if report.schedule_date else None,
+                                "schedule_time": str(report.schedule_time) if report.schedule_time else None,
                                 "use_stretcher": report.use_stretcher,
                                 "pickup_address": report.pickup_address,
                                 "destination_address": report.destination_address,

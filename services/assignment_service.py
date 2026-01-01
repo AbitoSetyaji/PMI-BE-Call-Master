@@ -42,7 +42,7 @@ async def get_all_assignments(db: AsyncSession, current_user: User, page: int = 
     result = await db.execute(
         select(Assignment)
         .options(
-            selectinload(Assignment.report),
+            selectinload(Assignment.report).selectinload(Report.transport_type_rel),
             selectinload(Assignment.vehicle)
         )
         .offset((page - 1) * size)
@@ -59,6 +59,22 @@ async def get_all_assignments(db: AsyncSession, current_user: User, page: int = 
         driver = driver_result.scalar_one_or_none()
         assignment_dict["driver_name"] = driver.name if driver else None
         assignment_dict["vehicle_plate"] = a.vehicle.plate_number if a.vehicle else None
+        
+        # Add report data for formatted Report ID
+        if a.report:
+            transport_type_name = None
+            if a.report.transport_type_rel:
+                transport_type_name = a.report.transport_type_rel.name
+            assignment_dict["report"] = {
+                "transport_type_name": transport_type_name,
+                "schedule_date": str(a.report.schedule_date) if a.report.schedule_date else None,
+                "schedule_time": str(a.report.schedule_time) if a.report.schedule_time else None,
+                "requester_name": a.report.requester_name,
+                "requester_phone": a.report.requester_phone,
+            }
+        else:
+            assignment_dict["report"] = None
+            
         assignments_list.append(assignment_dict)
     
     return paginated_response(
